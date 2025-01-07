@@ -1,0 +1,14 @@
+# Ignorar a pasta node_modules
+node_modules/
+
+# Ignorar o arquivo de variáveis de ambiente
+.env
+
+# Ignorar o arquivo de credenciais do Firebase Admin SDK
+firebase-adminsdk.json
+
+# Ignorar arquivos de logs
+*.log
+
+# Ignorar cache do editor
+.vscode/
