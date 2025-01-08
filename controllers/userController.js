@@ -2,9 +2,9 @@ const { admin, db } = require("../config/firebaseConfig");
 
 // Adiciona um novo usuário no Firebase Authentication e Firestore
 const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phoneNumber } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !phoneNumber) {
     return res
       .status(400)
       .json({ message: "Todos os campos são obrigatórios." });
@@ -16,12 +16,14 @@ const registerUser = async (req, res) => {
       email,
       password,
       displayName: name,
+      phoneNumber: phoneNumber,
     });
 
     // Salva informações adicionais no Firestore
     await db.collection("users").doc(user.uid).set({
       name,
       email,
+      phoneNumber,
       createdAt: new Date(),
     });
 
