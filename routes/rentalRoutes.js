@@ -6,6 +6,7 @@ const {
   deleteRental,
 } = require("../controllers/rentalController");
 const verifyUserExists = require("../middlewares/verifyUserExists");
+const validateRentalStatus = require("../middlewares/validateRentalStatus");
 
 const router = express.Router();
 
@@ -16,9 +17,9 @@ router.post("/", verifyUserExists, createRental);
 router.get("/:id", verifyUserExists, listRentals);
 
 // Rota para atualizar um aluguel específico
-router.patch("/:id", verifyUserExists, updateRental);
+router.patch("/:id", validateRentalStatus, updateRental);
 
 // Rota para excluir um aluguel
-router.delete("/:id", verifyUserExists, deleteRental);
+router.delete("/:id", deleteRental);
 
 module.exports = router;
