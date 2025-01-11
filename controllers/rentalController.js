@@ -1,13 +1,13 @@
 // Adiciona um novo aluguel
 const { db } = require("../config/firebaseConfig");
+const calculatePrice = require("../utils/calculatePrice");
 
 const createRental = async (req, res) => {
-  const { userId, rentalItemId, startDate, price } = req.body;
+  const { userId, rentalItemId } = req.body;
 
-  if (!userId || !rentalItemId || !startDate || !price) {
+  if (!userId || !rentalItemId) {
     return res.status(400).json({
-      message:
-        "Os campos userId, rentalItemId, startDate e price são obrigatórios.",
+      message: "Os campos userId, rentalItemId são obrigatórios.",
     });
   }
 
@@ -27,10 +27,10 @@ const createRental = async (req, res) => {
     const rentalRef = await db.collection("rentals").add({
       userId,
       rentalItemId,
-      startDate: new Date(startDate),
+      startDate: new Date(),
       endDate: null,
       status: "active",
-      price,
+      price: null,
       createdAt: new Date(),
     });
 
@@ -82,7 +82,7 @@ const listRentals = async (req, res) => {
 // Atualiza um aluguel pelo ID
 const updateRental = async (req, res) => {
   const { id } = req.params;
-  const { statusMapped, endDate } = req.body;
+  const { statusMapped } = req.body;
 
   if (!id) {
     return res.status(400).json({ message: "O ID do rental é obrigatório." });
@@ -91,17 +91,26 @@ const updateRental = async (req, res) => {
   try {
     // Atualiza o rental
     const rentalRef = db.collection("rentals").doc(id);
-    await rentalRef.update({
-      status: statusMapped,
-      endDate: endDate ? new Date(endDate) : new Date(),
-    });
+    const rentalDoc = await rentalRef.get();
+    const rentalData = rentalDoc.data();
+
+    let updates = { status: statusMapped };
+
+    if (["done", "canceled"].includes(statusMapped)) {
+      const endDate = new Date(); // Define o término como o momento atual
+      const price = calculatePrice(rentalData.startDate.toDate(), endDate); // Utiliza o utilitário para calcular o preço
+
+      updates = {
+        ...updates,
+        endDate,
+        price,
+      };
+    }
+
+    await rentalRef.update(updates);
 
     // Verifica se o rental foi concluído
     if (["done", "canceled"].includes(statusMapped)) {
-      // Recupera o rental para obter o userId
-      const rentalDoc = await rentalRef.get();
-      const rentalData = rentalDoc.data();
-
       // Remove o rental ativo do usuário
       await db.collection("users").doc(rentalData.userId).update({
         currentRental: null,
