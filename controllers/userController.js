@@ -24,6 +24,10 @@ const registerUser = async (req, res) => {
       email,
       createdAt: new Date(),
       currentRental: null,
+      credits: 0,
+      // phoneNumber
+      // cpf,
+      // birthday: new Date(birthday),
     });
 
     res.status(201).json({ message: "Usuário registrado com sucesso!", user });
@@ -92,4 +96,35 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, listUsers, getUserById, deleteUser };
+const addCredits = async (req, res) => {
+  const { id } = req.params;
+  const { creditsToAdd } = req.body;
+
+  try {
+    // Recupera o usuário no Firestore
+    const userRef = db.collection("users").doc(id);
+    const userDoc = await userRef.get();
+    const userData = userDoc.data();
+
+    const updatedCredits = userData.credits + creditsToAdd;
+
+    // Atualiza os créditos do usuário
+    await userRef.update({ credits: updatedCredits });
+
+    res.status(200).json({
+      message: "Créditos adicionados ao usuário.",
+      userId: userRef.id,
+    });
+  } catch (error) {
+    console.error("Erro ao adicionar créditos:", error.message);
+    throw error;
+  }
+};
+
+module.exports = {
+  registerUser,
+  listUsers,
+  getUserById,
+  deleteUser,
+  addCredits,
+};

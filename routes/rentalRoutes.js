@@ -7,11 +7,12 @@ const {
 } = require("../controllers/rentalController");
 const verifyUserExists = require("../middlewares/verifyUserExists");
 const validateRentalStatus = require("../middlewares/validateRentalStatus");
+const validateCredits = require("../middlewares/validateCredits");
 
 const router = express.Router();
 
 // Rota para criar um novo aluguel
-router.post("/", verifyUserExists, createRental);
+router.post("/", verifyUserExists, validateCredits, createRental);
 
 // Rota para listar todos os aluguéis de um usuário
 router.get("/:id", verifyUserExists, listRentals);
