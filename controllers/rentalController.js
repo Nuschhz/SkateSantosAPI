@@ -4,32 +4,36 @@ const calculatePrice = require("../utils/calculatePrice");
 const { subtractCredits } = require("../utils/subtractCredits");
 
 const createRental = async (req, res) => {
-  const { userId, rentalItemId } = req.body;
+  const { userId, skateId, initialStationId } = req.body;
 
-  if (!userId || !rentalItemId) {
+  if (!userId || !skateId || !initialStationId) {
     return res.status(400).json({
-      message: "Os campos userId, rentalItemId são obrigatórios.",
+      message: "Os campos userId, skateId e initialStationId são obrigatórios.",
     });
   }
 
   try {
-    // Cria um novo rental
-    const userRef = await db.collection("users").doc(userId);
-    const userDoc = await userRef.get();
-    const userData = userDoc.data();
+    // Recupera a estação inicial e suas células
+    const stationRef = db.collection("stations").doc(initialStationId);
+    const stationDoc = await stationRef.get();
+    const stationData = stationDoc.data();
 
-    if (userData.currentRental) {
-      return res.status(400).json({
-        message: "O usuário já possui um aluguel ativo.",
-        currentRental: userData.currentRental,
-      });
-    }
+    // Atualiza as células da estação, liberando a célula que contém o skate
+    const updatedCells = stationData.cells.map((cell) =>
+      cell.skateId === skateId ? { ...cell, skateId: null } : cell
+    );
 
+    // Atualiza a estação no Firestore
+    await stationRef.update({ cells: updatedCells });
+
+    // Cria o rental
     const rentalRef = await db.collection("rentals").add({
       userId,
-      rentalItemId,
+      skateId,
       startDate: new Date(),
       endDate: null,
+      initialStationId,
+      lastStationId: null,
       status: "active",
       price: null,
       createdAt: new Date(),

@@ -12,12 +12,12 @@ const createItem = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "Item successfully created!",
+      message: "Item criado com sucesso!",
       itemId: itemRef.id, // Retorna o ID gerado automaticamente
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error creating item.",
+      message: "Error ao criar item.",
       error: error.message,
     });
   }

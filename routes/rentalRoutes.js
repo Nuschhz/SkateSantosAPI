@@ -8,11 +8,18 @@ const {
 const verifyUserExists = require("../middlewares/verifyUserExists");
 const validateRentalStatus = require("../middlewares/validateRentalStatus");
 const validateCredits = require("../middlewares/validateCredits");
+const validateSkate = require("../middlewares/validateSkate");
 
 const router = express.Router();
 
 // Rota para criar um novo aluguel
-router.post("/", verifyUserExists, validateCredits, createRental);
+router.post(
+  "/",
+  verifyUserExists,
+  validateCredits,
+  validateSkate,
+  createRental
+);
 
 // Rota para listar todos os aluguéis de um usuário
 router.get("/:id", verifyUserExists, listRentals);
