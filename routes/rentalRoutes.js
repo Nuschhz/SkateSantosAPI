@@ -9,6 +9,7 @@ const verifyUserExists = require("../middlewares/verifyUserExists");
 const validateRentalStatus = require("../middlewares/validateRentalStatus");
 const validateCredits = require("../middlewares/validateCredits");
 const validateSkate = require("../middlewares/validateSkate");
+const verifyActiveRental = require("../middlewares/verifyCurrentRental");
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ const router = express.Router();
 router.post(
   "/",
   verifyUserExists,
+  verifyActiveRental,
   validateCredits,
   validateSkate,
   createRental
