@@ -25,6 +25,7 @@ const registerUser = async (req, res) => {
       createdAt: new Date(),
       currentRental: null,
       credits: 0,
+      strikes: "great",
       // phoneNumber
       // cpf,
       // birthday: new Date(birthday),
@@ -121,10 +122,33 @@ const addCredits = async (req, res) => {
   }
 };
 
+const updateStrikes = async (req, res) => {
+  const { id } = req.params;
+  const { strikesMapped } = req.body;
+
+  try {
+    const userRef = db.collection("users").doc(id);
+
+    await userRef.update({ strikes: strikesMapped });
+
+    res.status(200).json({
+      message: "Strikes do usuário atualizados com sucesso.",
+      strikes: strikesMapped,
+      userId: id,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erro ao atualizar strikes.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   listUsers,
   getUserById,
   deleteUser,
   addCredits,
+  updateStrikes,
 };
