@@ -2,12 +2,14 @@ const { admin, db } = require("../config/firebaseConfig");
 
 // Adiciona um novo usuário no Firebase Authentication e Firestore
 const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phoneNumber, cpf, profilePicture, birthday } =
+    req.body;
 
-  if (!name || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: "Todos os campos são obrigatórios." });
+  if (!name || !email || !password || !phoneNumber || !cpf || !birthday) {
+    return res.status(400).json({
+      message:
+        "Os campos: name, email, password, phoneNumber, cpf e birthday são obrigatórios.",
+    });
   }
 
   try {
@@ -18,18 +20,24 @@ const registerUser = async (req, res) => {
       displayName: name,
     });
 
+    const formattedBirthday = new Date(`${birthday}T03:00:00Z`);
+
     // Salva informações adicionais no Firestore
-    await db.collection("users").doc(user.uid).set({
-      name,
-      email,
-      createdAt: new Date(),
-      currentRental: null,
-      credits: 0,
-      strikes: "great",
-      // phoneNumber
-      // cpf,
-      // birthday: new Date(birthday),
-    });
+    await db
+      .collection("users")
+      .doc(user.uid)
+      .set({
+        name,
+        email,
+        createdAt: new Date(),
+        currentRental: null,
+        credits: 0,
+        strikes: "great",
+        phoneNumber: phoneNumber,
+        cpf: cpf,
+        profilePicture: profilePicture || null,
+        birthday: formattedBirthday,
+      });
 
     res.status(201).json({ message: "Usuário registrado com sucesso!", user });
   } catch (error) {
@@ -73,6 +81,40 @@ const getUserById = async (req, res) => {
     res
       .status(500)
       .json({ message: "Erro ao buscar usuário.", error: error.message });
+  }
+};
+
+// Atualiza as informações do usuário pelo ID
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { phoneNumber, profilePicture, email } = req.body;
+
+  try {
+    // Referência ao usuário no Firestore
+    const userRef = db.collection("users").doc(id);
+
+    // Dados atualizados no Firestore
+    const updatedData = {};
+    if (profilePicture) updatedData.profilePicture = profilePicture;
+
+    if (email) {
+      await admin.auth().updateUser(id, { email });
+      updatedData.email = email;
+    }
+
+    if (phoneNumber) {
+      await admin.auth().updateUser(id, { phoneNumber });
+      updatedData.phoneNumber = phoneNumber;
+    }
+
+    await userRef.update(updatedData);
+
+    res.status(200).json({ message: "Usuário atualizado com sucesso!" });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erro ao atualizar usuário.",
+      error: error.message,
+    });
   }
 };
 
@@ -151,4 +193,5 @@ module.exports = {
   deleteUser,
   addCredits,
   updateStrikes,
+  updateUser,
 };
