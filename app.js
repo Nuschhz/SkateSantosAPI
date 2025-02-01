@@ -1,14 +1,24 @@
 const express = require("express");
+const cors = require("cors");
 const bodyParser = require("body-parser");
+
 const userRoutes = require("./routes/userRoutes");
 const rentalRoutes = require("./routes/rentalRoutes");
 const itemRoutes = require("./routes/itemRoutes.js");
 const stationRoutes = require("./routes/stationRoutes.js");
+
 const app = express();
 
-// Configurações básicas
 require("dotenv").config();
 app.use(bodyParser.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,POST,PATCH,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
 
 // Rotas
 app.use("/api/users", userRoutes);
