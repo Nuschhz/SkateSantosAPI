@@ -22,6 +22,9 @@ router.post("/", createStation);
 // Mover skate entre estações ou células
 router.post("/move-skate", verifyRentalExists, validateCell, moveSkate);
 
+// Adicionar Skate
+router.post("/add-skate", verifyToStationExists, validateCell, addSkate);
+
 // Mover skate entre estações ou células
 router.delete("/:id", verifyToStationExists, deleteStation);
 
