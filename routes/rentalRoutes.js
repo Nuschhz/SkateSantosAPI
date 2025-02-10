@@ -2,6 +2,7 @@ const express = require("express");
 const {
   createRental,
   listRentals,
+  listRentalsById,
   updateRental,
   deleteRental,
 } = require("../controllers/rentalController");
@@ -26,7 +27,10 @@ router.post(
 );
 
 // Rota para listar todos os aluguéis de um usuário
-router.get("/:id", verifyUserExists, listRentals);
+router.get("/", listRentals);
+
+// Rota para listar todos os aluguéis de um usuário
+router.get("/:id", verifyUserExists, listRentalsById);
 
 // Rota para atualizar um aluguel específico
 router.patch("/:id", validateRentalStatus, updateRental);

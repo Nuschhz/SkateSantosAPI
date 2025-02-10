@@ -56,8 +56,22 @@ const createRental = async (req, res) => {
   }
 };
 
-// Lista todos os aluguéis (filtrado por usuário)
+// Lista todos os aluguéis
 const listRentals = async (req, res) => {
+  try {
+    const snapshot = await db.collection("rentals").get();
+    const rentals = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    res.status(200).json(rentals);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erro ao listar aluguéis.", error: error.message });
+  }
+};
+
+// Lista todos os aluguéis (filtrado por usuário)
+const listRentalsById = async (req, res) => {
   const { id: userId } = req.params;
 
   try {
@@ -141,6 +155,7 @@ const deleteRental = async (req, res) => {
 module.exports = {
   createRental,
   listRentals,
+  listRentalsById,
   updateRental,
   deleteRental,
 };
