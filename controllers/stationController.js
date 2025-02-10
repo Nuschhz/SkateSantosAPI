@@ -35,6 +35,23 @@ const createStation = async (req, res) => {
   }
 };
 
+// Lista todos os usuários do Firestore
+const listStations = async (req, res) => {
+  try {
+    const snapshot = await db.collection("stations").get();
+    const stations = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).json(stations);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erro ao listar estações.", error: error.message });
+  }
+};
+
 // Mover um skate para outra célula ou estação
 const moveSkate = async (req, res) => {
   const { rentalId, toStationId, toCellNumber } = req.body;
@@ -136,8 +153,29 @@ const addSkate = async (req, res) => {
   }
 };
 
+// Deleta a estação pelo ID
+const deleteStation = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const stationRef = db.collection("stations").doc(id);
+
+    await stationRef.delete();
+
+    return res.status(200).json({ message: "Estação deletada com sucesso!" });
+  } catch (error) {
+    console.error("Erro ao deletar estação:", error.message);
+    return res.status(500).json({
+      message: "Erro ao deletar estação.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createStation,
   moveSkate,
   addSkate,
+  listStations,
+  deleteStation,
 };
