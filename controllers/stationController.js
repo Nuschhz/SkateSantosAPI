@@ -1,7 +1,7 @@
 const { db } = require("../config/firebaseConfig");
 
 const createStation = async (req, res) => {
-  const { latitude, longitude, cells } = req.body;
+  const { name, latitude, longitude, cells } = req.body;
 
   if (!cells || cells < 1) {
     return res.status(400).json({
@@ -17,6 +17,7 @@ const createStation = async (req, res) => {
     }));
 
     const stationRef = await db.collection("stations").add({
+      name,
       latitude,
       longitude,
       cells: cellArray,
