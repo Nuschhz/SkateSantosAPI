@@ -4,6 +4,8 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser");
 
+const verifyApiKey = require("./middlewares/verifyApiKey.js");
+
 const userRoutes = require("./routes/userRoutes");
 const rentalRoutes = require("./routes/rentalRoutes");
 const itemRoutes = require("./routes/itemRoutes.js");
@@ -51,6 +53,8 @@ app.use(
     },
   })
 );
+
+app.use("/api", verifyApiKey);
 
 // Rotas
 app.use("/api/users", userRoutes);
