@@ -20,28 +20,16 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? process.env.DUCK_DNS
-        : "http://localhost:3000",
+    origin:[
+        process.env.DUCK_DNS,
+        "http://localhost:4000"
+	],
     methods: "GET,POST,PATCH,DELETE",
     allowedHeaders: "Content-Type,Authorization",
   })
 );
 
 app.enable("trust proxy");
-
-app.use((req, res, next) => {
-  if (process.env.NODE_ENV === "production") {
-    if (req.secure || req.headers["x-forwarded-proto"] === "https") {
-      next();
-    } else {
-      res.redirect(301, `https://${req.headers.host}${req.url}`);
-    }
-  } else {
-    next();
-  }
-});
 
 // Limite de requisições por IP
 app.use(
