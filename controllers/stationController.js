@@ -10,6 +10,18 @@ const createStation = async (req, res) => {
   }
 
   try {
+    const snapshot = await db
+      .collection("stations")
+      .orderBy("number", "desc")
+      .limit(1)
+      .get();
+
+    let nextNumber = 1; // Valor padrão para a primeira estação
+    if (!snapshot.empty) {
+      const lastStation = snapshot.docs[0].data();
+      nextNumber = (lastStation.number || 0) + 1;
+    }
+
     // Inicializa as células com skates vazios
     const cellArray = Array.from({ length: cells }, (_, index) => ({
       cellNumber: index + 1,
@@ -21,6 +33,7 @@ const createStation = async (req, res) => {
       latitude,
       longitude,
       cells: cellArray,
+      number: nextNumber,
       createdAt: new Date(),
     });
 

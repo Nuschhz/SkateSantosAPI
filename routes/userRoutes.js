@@ -7,6 +7,7 @@ const {
   addCredits,
   updateStrikes,
   updateUser,
+  getUserByEmail,
 } = require("../controllers/userController");
 const verifyUserExists = require("../middlewares/verifyUserExists");
 const validateStrike = require("../middlewares/validateStrike");
@@ -21,7 +22,10 @@ router.post("/register", validateCPF, verifyCPF, registerUser);
 router.get("/", listUsers);
 
 // Rota para buscar usuário pelo ID
-router.get("/:id", getUserById);
+router.get("/id/:id", getUserById);
+
+// Rota para buscar usuário pelo ID
+router.get("/email/:email", getUserByEmail);
 
 // Rota para atualizar os dados do usuário pelo ID
 router.patch("/update-user/:id", verifyUserExists, updateUser);

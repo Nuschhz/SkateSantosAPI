@@ -84,6 +84,40 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getUserByEmail = async (req, res) => {
+  const { email } = req.params;
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ message: "O email do usuário é obrigatório." });
+  }
+
+  try {
+    const snapshot = await db
+      .collection("users")
+      .where("email", "==", email)
+      .get();
+
+    if (snapshot.empty) {
+      return res
+        .status(404)
+        .json({ message: "Usuário não encontrado com este email." });
+    }
+
+    // Se encontrar um ou mais usuários com o email, retorna o primeiro
+    const userDoc = snapshot.docs[0];
+    return res.status(200).json({ id: userDoc.id, ...userDoc.data() });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        message: "Erro ao buscar usuário por email.",
+        error: error.message,
+      });
+  }
+};
+
 // Atualiza as informações do usuário pelo ID
 const updateUser = async (req, res) => {
   const { id } = req.params;
@@ -190,6 +224,7 @@ module.exports = {
   registerUser,
   listUsers,
   getUserById,
+  getUserByEmail,
   deleteUser,
   addCredits,
   updateStrikes,

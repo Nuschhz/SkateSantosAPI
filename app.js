@@ -20,10 +20,7 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(
   cors({
-    origin:[
-        process.env.DUCK_DNS,
-        "http://localhost:4000"
-	],
+    origin: [process.env.DUCK_DNS, "http://localhost:4000"],
     methods: "GET,POST,PATCH,DELETE",
     allowedHeaders: "Content-Type,Authorization",
   })
@@ -35,7 +32,7 @@ app.enable("trust proxy");
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: process.env.NODE_ENV === "production" ? 100 : 1000,
+    max: process.env.NODE_ENV === "production" ? 500 : 1000,
     message: {
       error: "Muitas requisições deste IP, tente novamente mais tarde",
     },
@@ -52,4 +49,6 @@ app.use("/api/stations", stationRoutes);
 app.use("/api/tickets", ticketRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, "0.0.0.0", () => console.log(`Servidor rodando na porta ${PORT}`));
+app.listen(PORT, "0.0.0.0", () =>
+  console.log(`Servidor rodando na porta ${PORT}`)
+);
