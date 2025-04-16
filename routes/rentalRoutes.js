@@ -26,7 +26,7 @@ router.post(
   createRental
 );
 
-// Rota para listar todos os aluguéis de um usuário
+// Rota para listar todos os aluguéis de todos os usuários
 router.get("/", listRentals);
 
 // Rota para listar todos os aluguéis de um usuário

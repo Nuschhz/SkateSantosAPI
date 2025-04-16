@@ -22,17 +22,23 @@ npm install
 
 ### Estações
 
+- GET /api/stations/ - Lista as estações para guardar skates.
+
 - POST /api/stations/ - Cria uma estação para guardar skates.
 
 - POST /api/stations/move-skate - Move o skate alugado de uma estação inicial para uma estação final.
 
 - POST /api/stations/add-skate - Adiciona um skate que ainda não está ativo.
 
+- DELETE /api/stations/:id - Deleta uma estação com base no ID.
+
 ### Alugueis
 
-- POST /api/rentals/ - Cria um aluguel para que um usuário associe a si mesmo. Esse aluguel retorna todos os dados da transação do início ao fim do uso do skate.
+- GET /api/rentals/ - Retorna o histórico de aluguéis de todos os usuários.
 
 - GET /api/rentals/:id - Retorna o histórico de aluguéis de um usuário específico.
+
+- POST /api/rentals/ - Cria um aluguel para que um usuário associe a si mesmo. Esse aluguel retorna todos os dados da transação do início ao fim do uso do skate.
 
 - PATCH /api/rentals/:id - Atualiza o aluguel de um usuário, calculando o número de créditos que será subtraído da sua conta e finalizando a transação.
 
@@ -44,7 +50,9 @@ npm install
 
 - GET /api/users/ - Lista todos os usuários registrados no banco de dados.
 
-- GET /api/users/:id - Retorna os dados de um usuário específico.
+- GET /api/users/id/:id - Retorna os dados de um usuário específico pelo ID.
+
+- GET /api/users/email/:email - Retorna os dados de um usuário específico pelo email.
 
 - PATCH /api/update-user/:id - Atualiza os dados de um usuário, como foto, email ou senha.
 
