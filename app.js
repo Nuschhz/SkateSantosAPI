@@ -26,7 +26,7 @@ app.use(
   })
 );
 
-app.enable("trust proxy");
+app.enable("trust proxy", 1);
 
 // Limite de requisições por IP
 app.use(
