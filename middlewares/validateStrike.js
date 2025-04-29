@@ -1,7 +1,7 @@
 const validateStrike = (req, res, next) => {
   const { strikes } = req.body;
 
-  const validStatuses = ["banned", "standard", "great"];
+  const validStatuses = ["banned", "bad", "regular", "great"];
 
   // Validação do campo strikes
   if (
@@ -11,7 +11,7 @@ const validateStrike = (req, res, next) => {
   ) {
     return res.status(400).json({
       message:
-        "O strikes deve ser um número válido (0 para 'banned', 1 para 'standard', e 2 para 'great').",
+        "O strikes deve ser um número válido (0 para 'banned', 1 para 'bad', e 2 para 'regular' e 3 para 'great').",
     });
   }
 
