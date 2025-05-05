@@ -7,6 +7,7 @@ const createItem = async (req, res) => {
     // Criação do item
     const itemRef = await db.collection("items").add({
       status: statusMapped,
+      currentRental: null,
       description: description || null, // Campo opcional
       createdAt: new Date(), // Data de criação
     });
