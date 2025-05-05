@@ -99,7 +99,7 @@ const listRentalsById = async (req, res) => {
 // Atualiza um aluguel pelo ID
 const updateRental = async (req, res) => {
   const { id } = req.params;
-  const { statusMapped, lastStationId } = req.body;
+  const { statusMapped } = req.body;
 
   if (!id) {
     return res.status(400).json({ message: "O ID do aluguel é obrigatório." });
@@ -111,7 +111,7 @@ const updateRental = async (req, res) => {
     const rentalDoc = await rentalRef.get();
     const rentalData = rentalDoc.data();
 
-    let updates = { status: statusMapped, lastStationId };
+    let updates = { status: statusMapped };
 
     // Verifica se o rental foi concluído
     if (["done", "canceled"].includes(statusMapped)) {
