@@ -39,6 +39,11 @@ const createRental = async (req, res) => {
       createdAt: new Date(),
     });
 
+    // Atualiza o documento do item com o ID do renatal ativo
+    await db.collection("items").doc(skateId).update({
+      currentRental: rentalRef.id,
+    });
+
     // Atualiza o documento do usuário com o ID do rental ativo
     await db.collection("users").doc(userId).update({
       currentRental: rentalRef.id,
@@ -121,6 +126,11 @@ const updateRental = async (req, res) => {
       };
 
       await rentalRef.update(updates);
+
+      // Remove o rental ativo do skate
+      await db.collection("items").doc(rentalData.skateId).update({
+        currentRental: null,
+      });
 
       // Remove o rental ativo do usuário
       await db.collection("users").doc(rentalData.userId).update({
