@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(
   cors({
-    origin: [process.env.DUCK_DNS, "http://localhost:4000"],
+    origin: [process.env.DUCK_DNS, "http://localhost:4000", "https://skate-santos-web.vercel.app"],
     methods: "GET,POST,PATCH,DELETE",
     allowedHeaders: "Content-Type,Authorization",
   })
