@@ -18,6 +18,8 @@ npm install
 
 ### Itens
 
+- GET /api/itens/:id - Retorna os dados de um item específico pelo ID.
+
 - POST /api/itens/ - Cria um skate no banco de dados.
 
 ### Estações
