@@ -32,7 +32,7 @@ app.enable("trust proxy", 1);
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: process.env.NODE_ENV === "production" ? 500 : 1000,
+    max: process.env.NODE_ENV === "production" ? 50000 : 100000,
     message: {
       error: "Muitas requisições deste IP, tente novamente mais tarde",
     },
