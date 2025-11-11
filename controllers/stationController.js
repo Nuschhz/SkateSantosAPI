@@ -134,29 +134,60 @@ const addSkate = async (req, res) => {
   if (!toStationId || !toCellNumber || !skateId) {
     return res.status(400).json({
       message:
-        "Os campos toStationId, toCellNumber e skateId são obrigatórios.",
+        "Os campos toStationId, toCellNumber e skateId (do RFID) são obrigatórios.",
     });
   }
 
+  const stationRef = db.collection("stations").doc(toStationId);
+  const skateRef = db.collection("items").doc(skateId);
+
   try {
-    // Recupera a estação no Firestore
-    const stationRef = db.collection("stations").doc(toStationId);
-    const stationDoc = await stationRef.get();
-    const stationData = stationDoc.data();
+    await db.runTransaction(async (transaction) => {
+      const stationDoc = await transaction.get(stationRef);
+      if (!stationDoc.exists) {
+        throw new Error("Estação não encontrada.");
+      }
 
-    // Atualiza a célula com o skateId
-    const updatedCells = stationData.cells.map((c) =>
-      c.cellNumber === toCellNumber ? { ...c, skateId } : c
-    );
+      const stationData = stationDoc.data();
+      const cells = stationData.cells;
 
-    // Atualiza a estação no Firestore
-    await stationRef.update({ cells: updatedCells });
+      const cellIndex = cells.findIndex((c) => c.cellNumber === toCellNumber);
+      if (cellIndex === -1) {
+        throw new Error("Célula não encontrada nesta estação.");
+      }
+
+      if (cells[cellIndex].skateId) {
+        if (cells[cellIndex].skateId === skateId) {
+          throw new Error("Este skate já está alocado nesta célula.");
+        }
+        throw new Error("Célula já está ocupada por outro skate.");
+      }
+
+      const skateDoc = await transaction.get(skateRef);
+
+      if (!skateDoc.exists) {
+        transaction.set(skateRef, {
+          status: "available",
+          currentRental: null,
+          description: "skateboard",
+          createdAt: new Date(),
+        });
+      }
+
+      const updatedCells = [...cells];
+      updatedCells[cellIndex] = {
+        ...updatedCells[cellIndex],
+        skateId: skateId,
+      };
+
+      transaction.update(stationRef, { cells: updatedCells });
+    });
 
     res.status(200).json({
-      message: "Skate adicionado à célula com sucesso!",
+      message: "Skate alocado na célula com sucesso!",
       stationId: toStationId,
       cellNumber: toCellNumber,
-      skateId,
+      skateId: skateId,
     });
   } catch (error) {
     console.error("Erro ao adicionar skate:", error.message);
