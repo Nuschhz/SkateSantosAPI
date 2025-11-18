@@ -14,6 +14,45 @@ const createTicket = async (req, res) => {
         status: statusMapped,
         createdAt: new Date(),
       });
+
+      if (["skate", "strike"].includes(typeMapped)) {
+        const userRef = db.collection("users").doc(userId);
+        const userDoc = await userRef.get();
+
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+
+          if (userData.currentRental) {
+            const rentalId = userData.currentRental;
+            const rentalRef = db.collection("rentals").doc(rentalId);
+            const rentalDoc = await rentalRef.get();
+
+            if (rentalDoc.exists) {
+              const rentalData = rentalDoc.data();
+
+              await rentalRef.update({
+                status: "canceled",
+                endDate: new Date(),
+                price: 0,
+              });
+
+              if (rentalData.skateId) {
+                await db.collection("items").doc(rentalData.skateId).update({
+                  currentRental: null,
+                });
+              }
+
+              await userRef.update({
+                currentRental: null,
+              });
+
+              console.log(
+                `Aluguel ${rentalId} cancelado automaticamente pelo ticket.`
+              );
+            }
+          }
+        }
+      }
     }
 
     return res.status(201).json({
